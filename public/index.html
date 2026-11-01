@@ -3,343 +3,482 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Interview Gauntlet: Get Roasted by Your Dream Company</title>
+<title>LARPerview: Interview Cosplay</title>
 <style>
-:root{--bg:#0d1117;--card:#161b26;--ink:#f5f7fa;--muted:#9aa4b8;--accent:#ffcc00;--good:#3ddc97;--bad:#ff6b6b;--line:#2a3142}
+:root{--bg:#0d1117;--card:#161b26;--ink:#f5f7fa;--muted:#9aa4b8;--accent:#ffcc00;--good:#3ddc97;--bad:#ff6b6b;--line:#2a3142;--soft:#1f2636}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(circle at top,#1d2540,var(--bg) 60%);color:var(--ink);min-height:100vh;padding:24px}
-.wrap{max-width:820px;margin:0 auto}
+.wrap{max-width:840px;margin:0 auto}
 h1{font-size:2.3rem;margin:0 0 4px}
-h2{font-size:1.3rem;margin:0 0 10px}
+h2{font-size:1.3rem;margin:12px 0 8px}
+h3{margin:0 0 6px;font-size:1.05rem}
 .tag{color:var(--muted);margin:0 0 24px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.tile{cursor:pointer;transition:transform .15s,border-color .15s;border:2px solid transparent}
-.tile:hover{transform:translateY(-3px);border-color:var(--accent)}
-.emoji{font-size:2.2rem;line-height:1}
-.muted{color:var(--muted);font-size:.95rem}
-.small{font-size:.85rem;color:var(--muted)}
-button{background:var(--accent);color:#1a1400;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.95rem;cursor:pointer;margin:4px 6px 4px 0}
-button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-button.opt{display:block;width:100%;text-align:left;background:#1f2636;color:var(--ink);font-weight:500;margin:8px 0;border:1px solid var(--line)}
-button.opt:hover:not(:disabled){border-color:var(--accent)}
+.label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.costume{cursor:pointer;border:2px solid var(--line);background:var(--soft);border-radius:14px;padding:14px;color:var(--ink);text-align:left;font:inherit;margin:0}
+.costume.sel{border-color:var(--accent)}
+.costume .emoji{font-size:2rem;line-height:1.1}
+.muted{color:var(--muted);font-size:.92rem}
+.small{font-size:.85rem;color:var(--muted);margin-top:6px}
+textarea,input[type=text]{width:100%;background:#0f131d;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}
+textarea{min-height:140px;resize:vertical}
+input[type=file]{color:var(--muted)}
+input[type=checkbox]{width:16px;height:16px;margin:0}
+button{background:var(--accent);color:#1a1400;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.95rem;cursor:pointer;margin:6px 6px 0 0}
 button:disabled{opacity:.6;cursor:default}
-.bubble{background:#1f2636;padding:16px;border-radius:14px;line-height:1.5;font-size:1.1rem;border-left:4px solid var(--accent)}
-.reply{margin-top:12px;font-style:italic;color:var(--ink)}
-.score{font-size:2.8rem;font-weight:800;color:var(--accent);margin:6px 0}
-.pass{color:var(--good);font-weight:600}
-.fail{color:var(--bad);font-weight:600}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.bubble{background:var(--soft);padding:16px;border-radius:14px;line-height:1.5;font-size:1.05rem;border-left:4px solid var(--accent);margin:10px 0}
+.score{font-size:2.6rem;font-weight:800;color:var(--accent);margin:8px 0 2px}
+.good{color:var(--good);font-weight:600}
+.bad{color:var(--bad);font-weight:600}
+.error{color:var(--bad);margin-top:8px}
 .hidden{display:none !important}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.crumb{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+ul{margin:6px 0;padding-left:20px}
+li{margin:6px 0;line-height:1.45}
+.pill{display:inline-block;background:#2a2f40;border-radius:999px;padding:3px 10px;font-size:.85rem;margin:3px 4px 3px 0}
+.letter{background:#fbf7ec;color:#222;padding:18px;border-radius:10px;font-family:Georgia,serif;white-space:pre-wrap;line-height:1.5;margin-top:10px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);margin-top:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🎤 Interview Gauntlet</h1>
-  <p><a href="/custom.html" style="color:#ffcc00">📄 Try a custom job posting →</a></p>
-  <p class="tag">Get roasted by your dream company before the real one does it for free.</p>
-  <div id="app"></div>
+  <h1>🎭 LARPerview</h1>
+  <p class="tag">Pick a costume, hand over your resume, and survive a practice interview with a character who has opinions.</p>
+
+  <div id="intake" class="card">
+    <h2>1. Pick your costume</h2>
+    <div id="costumes" class="grid"></div>
+
+    <div class="label">2. Upload your resume (PDF, TXT, or MD, max 4 MB)</div>
+    <input id="resume" type="file" accept=".pdf,.txt,.md">
+    <div id="resumeName" class="small"></div>
+
+    <div class="label">3. Paste the job posting</div>
+    <textarea id="posting" placeholder="Paste the full job description here..."></textarea>
+
+    <div class="label">4. Company name (optional, used in your final letter)</div>
+    <input id="company" type="text" placeholder="e.g. Shopify">
+
+    <label class="toggle"><input id="pressure" type="checkbox"> Pressure mode: 90-second timer per answer</label>
+
+    <div class="row"><button id="startBtn">Start the interview 🎬</button></div>
+    <div id="intakeErr" class="error hidden"></div>
+  </div>
+
+  <div id="stage"></div>
 </div>
 
 <script>
-const CATS = {
-  tech: { label: 'Tech (MANGO)', emoji: '💻', blurb: 'LeetCode, vibes, and a whiteboard you will hate.' },
-  ai:   { label: 'AI Labs', emoji: '🤖', blurb: 'Ask us about alignment. Then about your alignment.' },
-  mcd:  { label: "McDonald's", emoji: '🍟', blurb: 'The ice cream machine is broken. Are you the solution?' },
-  fin:  { label: 'Finance', emoji: '📈', blurb: 'Mental math under pressure. Your mom would be proud, probably.' }
-};
+const COSTUMES = [
+  {
+    id: 'founder', emoji: '🚀', name: 'Hype Founder',
+    blurb: 'Says "we are basically a rocket ship." Everything is 10x.',
+    voice: `An overcaffeinated startup founder. Says "crush it", "10x", and "disrupt" unironically. Judges everything by growth and hustle. Gets excited and interrupts.`,
+    offer: `Dear Candidate,
 
-const COMPANIES = [
-  { id: 'msft', cat: 'tech', name: 'Microsoft', emoji: '🪟', bar: 4,
-    intro: 'Tell me about yourself. Keep it under 30 seconds, I have a Teams call at 3.',
-    pass: 'Congratulations! You have been offered a role on the Teams notifications team. Good luck.',
-    fail: 'We regret to inform you that your answer was "vibes." Please reapply after the next reorg.' },
-  { id: 'aapl', cat: 'tech', name: 'Apple', emoji: '🍎', bar: 4,
-    intro: 'Welcome. Please take a seat. Do not touch the prototype.',
-    pass: 'You have been selected. Your first task is to name a product that does not exist yet, in 2 words.',
-    fail: 'Your answers were not innovative. Please return the lanyard and the vibes.' },
-  { id: 'nflx', cat: 'tech', name: 'Netflix', emoji: '📺', bar: 5,
-    intro: 'We hire only the top 1%. Let us see which 1% you are.',
-    pass: 'You are a "Keeper." We have already cancelled your competitors.',
-    fail: 'You have been cancelled. Season 1, episode 1 of your career was not renewed.' },
-  { id: 'goog', cat: 'tech', name: 'Google', emoji: '🔍', bar: 4,
-    intro: 'Hi! Before we start, can you explain your answers to me like I am five?',
-    pass: 'You passed! Your offer is pending approval from 14 committees and a printer in Mountain View.',
-    fail: 'We looked you up. The top result was a Reddit thread. We are sorry.' },
-  { id: 'orcl', cat: 'tech', name: 'Oracle', emoji: '🔮', bar: 3,
-    intro: 'I can see your future. It involves a 45-minute slide deck.',
-    pass: 'Welcome aboard! Your first assignment is a 6-hour meeting about the last meeting.',
-    fail: 'The prophecy says you will not be joining us. We saw it coming in 2011.' },
-  { id: 'oai', cat: 'ai', name: 'OpenAI', emoji: '🧠', bar: 4,
-    intro: 'Hi there. Quick question before we begin: are you a language model?',
-    pass: 'You are hired! Please do not tell the board you were trained on our entire Slack.',
-    fail: 'We have decided to pass. Our internal model already does a worse version of you, and it is free.' },
-  { id: 'anth', cat: 'ai', name: 'Anthropic', emoji: '🛡️', bar: 5,
-    intro: 'Thanks for coming in. Before we start, I want to be very careful and very thoughtful about everything.',
-    pass: 'You have been offered a role. We are thrilled. We have also written three paragraphs about how thrilled we are.',
-    fail: 'After careful and thoughtful consideration, we will not be moving forward. We are sure you are great at other things.' },
-  { id: 'meta', cat: 'ai', name: 'Meta', emoji: '🥽', bar: 4,
-    intro: 'Let us move fast and break things. Starting with your interview.',
-    pass: 'Offer approved. You will be a Senior Staff Engineer on a team that renamed itself twice this week.',
-    fail: 'We are moving fast and have broken your candidacy. Apologies for the bug.' },
-  { id: 'mcd', cat: 'mcd', name: "McDonald's", emoji: '🍔', bar: 3,
-    intro: 'Welcome! Would you like to try our new menu item? It is the interview. Ready?',
-    pass: 'You are hired! Your first shift starts now. The fryer does not care about your résumé.',
-    fail: 'Thank you for applying. Unfortunately, we are looking for someone who can at least handle a milkshake.' },
-  { id: 'rbc', cat: 'fin', name: 'RBC Tech', emoji: '🏦', bar: 4,
-    intro: 'Thanks for coming in. Let us check that you can count to a number and also use Excel.',
-    pass: 'Congratulations. Your offer letter is a PDF attached to another PDF. Enjoy.',
-    fail: 'Your answers were fine. Fine is not a job. Fine is a polite rejection email with a signature block.' },
-  { id: 'citadel', cat: 'fin', name: 'Citadel', emoji: '🏰', bar: 5,
-    intro: 'I have 30 seconds to decide if you are worth our time. Start now.',
-    pass: 'Offer extended. Your compensation package has more zeros than your phone number.',
-    fail: 'Your expected value is negative. We have reallocated your interview slot to a Jane Street candidate.' },
-  { id: 'js', cat: 'fin', name: 'Jane Street', emoji: '♟️', bar: 5,
-    intro: 'Let us play a game. The rules are simple. The rules are not explained.',
-    pass: 'You have been accepted. Please report to the trading floor and bring a notebook and a backup personality.',
-    fail: 'You lost the game. The rules were never explained, which was the point. Thank you for playing.' }
+WE ARE SO EXCITED. You have been selected to join {company} as our next Head of Everything. Bring the hustle. We have no snacks yet, but we have a vision.
+
+Let's crush it,
+The Founder`,
+    reject: `Dear Candidate,
+
+After a deep dive into your 10x potential, our growth curve was flat. We are pivoting away from you. Best of luck in your next rocket ship.
+
+Sincerely,
+The Founder, {company}`
+  },
+  {
+    id: 'barraiser', emoji: '🧊', name: 'Cold Bar Raiser',
+    blurb: 'Interrupts. Asks "why" three times. Never smiles.',
+    voice: `A cold, precise senior interviewer who interrupts vague answers, asks "why" repeatedly, and wants evidence for every claim. Speaks in short sentences. Never gushes.`,
+    offer: `Candidate,
+
+Your answers were specific enough to be useful. We are extending an offer to join {company}. Please confirm by Friday.
+
+Regards,
+Bar Raiser`,
+    reject: `Candidate,
+
+Your answers were not supported by evidence. We have considered the matter and are not proceeding.
+
+Regards,
+Bar Raiser, {company}`
+  },
+  {
+    id: 'friday', emoji: '😴', name: 'Friday 4:55 PM Recruiter',
+    blurb: 'Wants answers under 30 seconds. Is thinking about dinner.',
+    voice: `A tired recruiter at the end of a long week who is distracted and wants short, clear answers. Keeps glancing at the clock. Mildly impatient, but still curious when something is interesting.`,
+    offer: `Hi Candidate!!
+
+Good news, you're moving forward with {company}. Someone will send the real offer Monday. Have a great weekend!!
+
+Bye,
+Recruiter (typing from the parking lot)`,
+    reject: `Hi Candidate,
+
+Thanks for your time. Unfortunately we're going another direction. Have a great weekend.
+
+Best,
+Recruiter, {company}`
+  },
+  {
+    id: 'sergeant', emoji: '🎖️', name: 'Drill Sergeant HR',
+    blurb: 'STAR method or get out. Now. Move.',
+    voice: `A drill sergeant who runs interviews like boot camp. Demands structure (situation, task, action, result). Barks follow-ups. Respects discipline and punishes rambling.`,
+    offer: `CANDIDATE,
+
+You passed the drill. You will report to {company} at 0600 hours with a pen, a notebook, and no excuses.
+
+Dismissed,
+Sergeant`,
+    reject: `CANDIDATE,
+
+You did not meet standard. Your answers were a rambling mess. Go home, do one more STAR story, and reapply.
+
+Sergeant, {company}`
+  },
+  {
+    id: 'auntie', emoji: '👵', name: 'Nosy Auntie HR',
+    blurb: 'Wants to know your hobbies, your mom, and why you are not on LinkedIn.',
+    voice: `A warm, nosy HR manager who asks personal-sounding questions about teamwork, hobbies, and how you handle conflict. Very kind, slightly intimidating, and always circles back to the job.`,
+    offer: `Dearest Candidate,
+
+We loved you! Everyone in the office is talking about your answers. Welcome to {company}. Please bring a cake on your first day.
+
+With love,
+Auntie HR`,
+    reject: `Dearest Candidate,
+
+We think you are a lovely person, truly. But we are going with someone else. Please call your mother and tell her we said hello.
+
+With love,
+Auntie HR, {company}`
+  }
 ];
 
-const POOLS = {
-  tech: [
-    { q: 'Reverse a linked list. Out loud. Right now.', o: [
-      ['Iterate with two pointers and explain each step', 2, 'The interviewer just wrote "hire" on a sticky note.'],
-      ['Ask if I can Google it', 0, 'Google is in the next room. Google is also in the next interview.'],
-      ['Use a stack and hope nobody checks the complexity', 1, 'It works. The interviewer has seen that exact answer 4,000 times.']]},
-    { q: 'Your code works on your laptop but not in production. Go.', o: [
-      ['Check environment differences and logs first', 2, 'Solid. You sound like someone who has been paged at 3 AM before.'],
-      ['Restart the laptop', 0, 'The laptop is fine. You are the problem. That is the real bug.'],
-      ['Blame the intern', 1, 'The intern is in the room. The intern is now taking notes about you.']]},
-    { q: 'Why do you want to work here? Be honest. You are here for the snacks.', o: [
-      ['The problems are hard and the impact is real', 2, 'Great. The snacks are a bonus we will not mention.'],
-      ['Snacks and a good parking spot', 0, 'Honest, I will give you that. Honestly, that is also the worst answer.'],
-      ['I love your mission statement, it is very inspiring', 1, 'You memorized the mission statement. We can tell. It was in the wrong font.']]},
-    { q: 'Where do you see yourself in five years?', o: [
-      ['Leading a team that ships something people use', 2, 'Ambitious and specific. We like specific.'],
-      ['Still applying to jobs, but with more confidence', 0, 'That is the most honest answer I have heard all week, and it is a rejection.'],
-      ['Your job, but better', 1, 'Confident. Slightly threatening. We will keep you on the list.']]}
-  ],
-  ai: [
-    { q: 'How would you make sure an AI system does what we intended and not what we said?', o: [
-      ['Discuss specification, evaluation, and oversight with real tradeoffs', 2, 'You just solved alignment in 45 seconds. We will need a whiteboard for that.'],
-      ['Tell it to be nice in the prompt', 0, 'Prompt engineering is not a moral philosophy. Please sit down.'],
-      ['Add more data and hope for the best', 1, 'Hope is not a strategy. Hope is also our entire fundraising pitch, so we will allow it.']]},
-    { q: 'Our model just wrote a poem about your cat. Is that good or bad?', o: [
-      ['Good, if the poem is accurate and not harmful. Let us define that carefully.', 2, 'Thoughtful. Now we need to write a 14-page doc about it.'],
-      ['Good, the cat deserved it', 0, 'Please do not give the model feelings about the cat.'],
-      ['Bad, poems should rhyme', 1, 'Our model is not a poet laureate. It is also not a poet. But it rhymes now, thanks to you.']]},
-    { q: 'Explain transformers to a grandmother who only uses a flip phone.', o: [
-      ['Attention is a way for each word to decide what to look at, like a family dinner conversation', 2, 'Grandma understood. She is now asking for a raise.'],
-      ['It is math, grandma', 0, 'Grandma has hung up. Grandma is a sharper interviewer than you.'],
-      ['It is a big neural network with lots of layers', 1, 'Technically correct, which is the most dangerous kind of correct.']]},
-    { q: 'Why this lab? Give me one reason that is not "AI is the future."', o: [
-      ['I care about the safety and research work, and I have a specific idea about it', 2, 'Good. You have a thesis. We are into theses.'],
-      ['AI is the future', 0, 'That is the one answer we have been hearing since 9 AM. You are our 40th AI is the future.'],
-      ['The compensation looks really good', 1, 'Honest. We respect that. We also do not pay for honesty.']]}
-  ],
-  mcd: [
-    { q: 'A customer says the Big Mac is cold. What do you do?', o: [
-      ['Apologize, remake it, and offer a drink on the house', 2, 'Customer service at its finest. The manager would like a word, a good one.'],
-      ['Tell them the Big Mac has always been cold', 0, 'Lies. Terrible lies. The customer has already filmed it for TikTok.'],
-      ['Microwave it and pretend', 1, 'Creative. Dangerous. We are not sure the microwave is on board.']]},
-    { q: 'The ice cream machine is broken. Again. Walk me through your plan.', o: [
-      ['Post the sign, call maintenance, and offer a shake alternative', 2, 'That is management energy. Are you management energy?'],
-      ['Stand in front of the machine and wait', 0, 'Staring has never fixed a machine. Or a relationship.'],
-      ['Hit it', 1, 'The machine is not a stress ball. Note to self: the machine is not the problem.']]},
-    { q: 'Rate your fry-making skills from 1 to 10. Be honest.', o: [
-      ['9. I know the timing and the salt.', 2, 'Confident and specific. Salt to taste, timing to the second.'],
-      ['2. I have never made a fry in my life', 0, 'Honest. Rude to the fryer. We will not be sharing this with the fryer.'],
-      ['10. I am the fry', 1, 'Lovely. Strange. Please do not say this to the customers.']]},
-    { q: 'Why should we hire you over the other 300 people in line?', o: [
-      ['I am reliable, fast, and I smile even during the rush', 2, 'That is the whole job. You are hired, with a name tag and a visor.'],
-      ['I need the money', 0, 'Relatable, deeply, and not a selling point.'],
-      ['I am very passionate about burgers', 1, 'Passion is great. Speed is better. Can you do both at 12:30 PM?']]}
-  ],
-  fin: [
-    { q: 'What is 17 times 23? You have 10 seconds.', o: [
-      ['391, I broke it into 17 times 20 plus 17 times 3', 2, 'Clean. Fast. The interviewer just said "huh" out loud.'],
-      ['Around 400, roughly', 0, 'Roughly is for estimating dinner, not trades. Next.'],
-      ['I need a calculator', 1, 'You are not wrong. But you are not hired yet either.']]},
-    { q: 'You have a coin that lands heads 60% of the time. Should you bet on heads?', o: [
-      ['Yes, positive expected value, and I would size the bet carefully with Kelly', 2, 'Now we are talking. Kelly is a sentence we respect.'],
-      ['Yes, always, because heads feels lucky', 0, 'The coin does not know your feelings. Please leave the trading floor.'],
-      ['It depends on the payout', 1, 'Correct and vague. We like correct. We like specific more.']]},
-    { q: 'Tell me about a time you were wrong about a market, and what you did next.', o: [
-      ['I sized too big, took the loss, and rebuilt my model around the mistake', 2, 'Good. Losses are tuition. You paid it, and you learned.'],
-      ['The market was wrong', 0, 'The market is never wrong. That is literally the first rule of the market.'],
-      ['I got lucky and did not think about it', 1, 'Luck is not a process. We need a process.']]},
-    { q: 'Explain your edge in one sentence.', o: [
-      ['I process information faster and more carefully than most people in the room, and I can show you how', 2, 'Confident and testable. We will test it. Right now.'],
-      ['I am really good at math', 0, 'So is everyone who applied. Our calculator is also good at math.'],
-      ['I have a gut feeling about it', 1, 'Your gut is not on the payroll. Please bring a spreadsheet next time.']]}
-  ]
-};
-
-const BRUTAL_LOW = [
-  'The interviewer has gone to get a coffee and has not returned. The coffee is also gone.',
-  'Your answers were so bad the interviewer\'s dog left the room.',
-  'We have reviewed your performance and it has been filed under "lessons."',
-  'Your interview has been added to the company\'s internal blooper reel. It is pinned to the top.'
+const BUZZWORDS = [
+  'synergy', 'leverage', 'impact', 'ownership', 'cross-functional', 'stakeholder',
+  'scalable', 'passionate', 'results-driven', 'team player', 'fast-paced', 'innovative',
+  'end-to-end', 'data-driven', 'collaborate', 'proactive', 'go-getter', 'thought leader'
 ];
-const BRUTAL_MID = [
-  'You were fine. Fine is not a job offer. Fine is a polite rejection email with a signature block.',
-  'You were not terrible, which is a very low bar, and we are still not going to hire you.',
-  'Your answers were perfectly acceptable, which is the most painful compliment in recruiting.'
-];
-const BRUTAL_CLOSE = [
-  'So close. The hiring manager said "good" out loud and immediately regretted it.',
-  'You almost had it. Almost is the most expensive word in hiring.',
-  'Your interviewer wrote "maybe" on the scorecard, then circled it three times in red.'
-];
-
-let state = null;
 
 const $ = id => document.getElementById(id);
-const el = (tag, props = {}, text) => {
+const stage = $('stage');
+const MAX_FILE = 4 * 1024 * 1024;
+let costumeId = COSTUMES[0].id;
+let state = null;
+let timerId = null;
+
+const el = (tag, cls, text) => {
   const n = document.createElement(tag);
-  Object.assign(n, props);
+  if (cls) n.className = cls;
   if (text !== undefined) n.textContent = text;
   return n;
 };
-const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-const shuffle = arr => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+
+const currentCostume = () => COSTUMES.find(c => c.id === costumeId);
+
+function renderCostumes() {
+  const wrap = $('costumes');
+  wrap.innerHTML = '';
+  COSTUMES.forEach(c => {
+    const b = el('button', 'costume' + (c.id === costumeId ? ' sel' : ''));
+    b.type = 'button';
+    b.appendChild(el('div', 'emoji', c.emoji));
+    b.appendChild(el('h3', '', c.name));
+    b.appendChild(el('div', 'muted', c.blurb));
+    b.onclick = () => { costumeId = c.id; renderCostumes(); };
+    wrap.appendChild(b);
+  });
+}
+
+function showErr(msg) {
+  const box = $('intakeErr');
+  box.textContent = msg;
+  box.classList.remove('hidden');
+}
+
+function guessMime(name) {
+  const n = name.toLowerCase();
+  if (n.endsWith('.pdf')) return 'application/pdf';
+  if (n.endsWith('.md')) return 'text/markdown';
+  return 'text/plain';
+}
+
+function readResume(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve(null);
+    if (file.size > MAX_FILE) return reject(new Error('Resume is over 4 MB. Export a smaller PDF.'));
+    const reader = new FileReader();
+    reader.onload = () => resolve({
+      name: file.name,
+      mimeType: guessMime(file.name),
+      data: String(reader.result).split(',')[1]
+    });
+    reader.onerror = () => reject(new Error('Could not read the resume file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function post(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Something went wrong. The interviewer is on break.');
+  return data;
+}
+
+function buzzHits(text) {
+  const t = text.toLowerCase();
+  return BUZZWORDS.filter(w => new RegExp('\\b' + w + '\\b').test(t));
+}
+
+function clearTimer() {
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
   }
-  return a;
+}
+
+$('resume').addEventListener('change', e => {
+  const f = e.target.files[0];
+  $('resumeName').textContent = f ? 'Selected: ' + f.name : '';
+});
+
+$('startBtn').onclick = async () => {
+  $('intakeErr').classList.add('hidden');
+  const posting = $('posting').value.trim();
+
+  if (posting.length < 80) {
+    showErr('That is not a job posting, that is a sticky note. Paste the full description.');
+    return;
+  }
+
+  const btn = $('startBtn');
+  btn.disabled = true;
+  btn.textContent = 'Reading your resume and the posting...';
+
+  try {
+    const resume = await readResume($('resume').files[0]);
+    const prep = await post('/api/prep', { posting, resume, costume: currentCostume().voice });
+
+    state = {
+      posting,
+      company: $('company').value.trim(),
+      hasResume: !!resume,
+      costume: currentCostume(),
+      prep,
+      questions: prep.questions,
+      idx: 0,
+      scores: [],
+      pressure: $('pressure').checked
+    };
+    renderPrep();
+  } catch (e) {
+    showErr(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Start the interview 🎬';
+  }
 };
 
-function home() {
-  state = null;
-  const app = $('app');
-  app.innerHTML = '';
-  app.appendChild(el('h2', {}, 'Pick your sector'));
-  const grid = el('div', { className: 'grid' });
-  Object.entries(CATS).forEach(([key, c]) => {
-    const card = el('div', { className: 'card tile' });
-    card.appendChild(el('div', { className: 'emoji' }, c.emoji));
-    card.appendChild(el('h3', { style: 'margin:8px 0 4px' }, c.label));
-    card.appendChild(el('div', { className: 'muted' }, c.blurb));
-    card.onclick = () => showCompanies(key);
-    grid.appendChild(card);
-  });
-  app.appendChild(grid);
-}
+function renderPrep() {
+  const p = state.prep;
+  stage.innerHTML = '';
+  const card = el('div', 'card');
 
-function showCompanies(cat) {
-  const app = $('app');
-  app.innerHTML = '';
-  app.appendChild(el('div', { className: 'crumb' }, CATS[cat].label));
-  app.appendChild(el('h2', {}, 'Pick a company to get rejected by'));
-  const grid = el('div', { className: 'grid' });
-  COMPANIES.filter(c => c.cat === cat).forEach(c => {
-    const card = el('div', { className: 'card tile' });
-    card.appendChild(el('div', { className: 'emoji' }, c.emoji));
-    card.appendChild(el('h3', { style: 'margin:8px 0 4px' }, c.name));
-    card.appendChild(el('div', { className: 'muted' }, 'Passing score: ' + c.bar + ' / 6'));
-    card.onclick = () => startInterview(c.id);
-    grid.appendChild(card);
-  });
-  app.appendChild(grid);
-  const back = el('button', { className: 'ghost', style: 'margin-top:12px' }, '← Back to sectors');
-  back.onclick = home;
-  app.appendChild(back);
-}
+  card.appendChild(el('div', 'muted', 'Interviewer: ' + state.costume.emoji + ' ' + state.costume.name));
+  card.appendChild(el('div', 'bubble', p.opener));
 
-function startInterview(id) {
-  const company = COMPANIES.find(c => c.id === id);
-  const questions = shuffle(POOLS[company.cat]).slice(0, 3);
-  state = { company, questions, i: 0, total: 0, answered: false };
-  renderQuestion();
+  card.appendChild(el('div', 'label', 'Fit score'));
+  card.appendChild(el('div', 'score', p.fit + ' / 100'));
+  card.appendChild(el('p', '', p.summary));
+
+  card.appendChild(el('div', 'label', 'Resume glow-up (reframes what you already did)'));
+  if (p.glowUp.length) {
+    const ul = el('ul');
+    p.glowUp.forEach(g => {
+      const li = el('li');
+      li.appendChild(el('strong', '', g.section + ': '));
+      li.appendChild(document.createTextNode(g.suggestion + (g.verifyFirst ? ' (confirm this is true before using it)' : '')));
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+  } else {
+    card.appendChild(el('p', 'muted', state.hasResume
+      ? 'No changes suggested. Your resume already sounds like you did things.'
+      : 'Upload a resume next time to get glow-up tips.'));
+  }
+
+  if (p.keywords.length) {
+    card.appendChild(el('div', 'label', 'Posting keywords (only use the ones that are true of you)'));
+    const box = el('div');
+    p.keywords.forEach(k => box.appendChild(el('span', 'pill', k)));
+    card.appendChild(box);
+  }
+
+  if (p.tips.length) {
+    card.appendChild(el('div', 'label', 'Interview tips'));
+    const ul = el('ul');
+    p.tips.forEach(t => ul.appendChild(el('li', '', t)));
+    card.appendChild(ul);
+  }
+
+  const go = el('button', '', 'Begin the interview →');
+  go.onclick = () => {
+    state.idx = 0;
+    state.scores = [];
+    renderQuestion();
+  };
+  card.appendChild(go);
+
+  stage.appendChild(card);
+  card.scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderQuestion() {
-  const { company, questions, i } = state;
-  const q = questions[i];
-  const app = $('app');
-  app.innerHTML = '';
+  clearTimer();
+  stage.innerHTML = '';
+  const q = state.questions[state.idx];
+  const card = el('div', 'card');
 
-  app.appendChild(el('div', { className: 'crumb' }, company.emoji + ' ' + company.name + '  ·  Question ' + (i + 1) + ' of 3'));
+  card.appendChild(el('div', 'muted', `${state.costume.name} · Question ${state.idx + 1} of ${state.questions.length}`));
+  card.appendChild(el('div', 'bubble', q));
 
-  const card = el('div', { className: 'card' });
-  if (i === 0) {
-    card.appendChild(el('p', { className: 'small' }, 'Interviewer says:'));
-    card.appendChild(el('div', { className: 'bubble', style: 'margin-bottom:14px' }, company.intro));
-  }
-  card.appendChild(el('div', { className: 'bubble' }, q.q));
-
-  const opts = el('div');
-  const replyBox = el('div', { className: 'reply hidden' });
-  const nextRow = el('div', { className: 'row hidden' });
-
-  q.o.forEach(([text, score, reply]) => {
-    const b = el('button', { className: 'opt' }, text);
-    b.onclick = () => {
-      if (state.answered) return;
-      state.answered = true;
-      state.total += score;
-      opts.querySelectorAll('button').forEach(x => x.disabled = true);
-      b.style.borderColor = score >= 2 ? 'var(--good)' : score === 0 ? 'var(--bad)' : 'var(--accent)';
-      replyBox.textContent = '💬 ' + reply;
-      replyBox.classList.remove('hidden');
-      const last = state.i === state.questions.length - 1;
-      const next = el('button', {}, last ? 'Hear the verdict 🎬' : 'Next question →');
-      next.onclick = () => {
-        state.answered = false;
-        if (last) finish();
-        else { state.i++; renderQuestion(); }
-      };
-      nextRow.innerHTML = '';
-      nextRow.appendChild(next);
-      nextRow.classList.remove('hidden');
-    };
-    opts.appendChild(b);
+  const answer = el('textarea');
+  answer.placeholder = 'Answer in character. Be specific. Be brave. Be at least somewhat true.';
+  const meter = el('div', 'small', 'Buzzword meter: 0');
+  answer.addEventListener('input', () => {
+    meter.textContent = 'Buzzword meter: ' + buzzHits(answer.value).length + ' (the interviewer is counting)';
   });
+  card.append(answer, meter);
 
-  card.appendChild(opts);
-  card.appendChild(replyBox);
-  card.appendChild(nextRow);
-  app.appendChild(card);
+  if (state.pressure) {
+    const timerEl = el('div', 'timer', 'Time left: 1:30');
+    card.appendChild(timerEl);
+    let left = 90;
+    timerId = setInterval(() => {
+      left--;
+      timerEl.textContent = 'Time left: ' + Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+      if (left <= 0) {
+        clearTimer();
+        timerEl.textContent = "Time's up. The interviewer is checking their watch.";
+        timerEl.className = 'error';
+      }
+    }, 1000);
+  }
+
+  const submit = el('button', '', 'Submit answer');
+  const out = el('div');
+
+  submit.onclick = async () => {
+    const text = answer.value.trim();
+    out.innerHTML = '';
+
+    if (text.length < 20) {
+      out.appendChild(el('div', 'error', 'Two words is not an answer. Give it more.'));
+      return;
+    }
+
+    clearTimer();
+    submit.disabled = true;
+    submit.textContent = 'Judging...';
+
+    try {
+      const r = await post('/api/grade', {
+        posting: state.posting,
+        costume: state.costume.voice,
+        question: q,
+        answer: text
+      });
+      state.scores.push(r.score);
+      showResult(out, r, buzzHits(text).length);
+    } catch (e) {
+      out.appendChild(el('div', 'error', e.message));
+      submit.disabled = false;
+      submit.textContent = 'Submit answer';
+    }
+  };
+
+  card.append(submit, out);
+  stage.appendChild(card);
+  answer.focus();
+  card.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showResult(out, r, buzz) {
+  out.innerHTML = '';
+  out.appendChild(el('div', 'score', r.score + ' / 6'));
+  out.appendChild(el('div', r.verdict === 'pass' ? 'good' : 'bad',
+    r.verdict === 'pass' ? '✅ Survived the round' : '❌ The interviewer is writing this down'));
+  out.appendChild(el('p', '', r.reaction));
+  out.appendChild(el('p', 'muted', 'Tip: ' + r.feedback));
+  if (buzz) {
+    out.appendChild(el('p', 'small', `You used ${buzz} buzzword${buzz > 1 ? 's' : ''}. Real interviewers hear that as a warning sign.`));
+  }
+
+  const last = state.idx === state.questions.length - 1;
+  const next = el('button', '', last ? 'See the verdict 🎬' : 'Next question →');
+  next.onclick = () => {
+    if (last) {
+      finish();
+    } else {
+      state.idx++;
+      renderQuestion();
+    }
+  };
+  out.appendChild(next);
 }
 
 function finish() {
-  const { company, total } = state;
-  const app = $('app');
-  app.innerHTML = '';
-  app.appendChild(el('div', { className: 'crumb' }, company.emoji + ' ' + company.name + '  ·  Final decision'));
+  clearTimer();
+  stage.innerHTML = '';
+  const total = state.scores.reduce((a, b) => a + b, 0);
+  const max = state.questions.length * 6;
+  const passed = total >= max * (2 / 3);
+  const c = state.costume;
+  const company = state.company || 'our company';
 
-  const card = el('div', { className: 'card' });
-  card.appendChild(el('div', { className: 'score' }, total + ' / 6'));
+  const card = el('div', 'card');
+  card.appendChild(el('div', 'muted', c.emoji + ' ' + c.name + ' has made a decision'));
+  card.appendChild(el('div', 'score', total + ' / ' + max));
+  card.appendChild(el('h2', '', passed ? 'Offer letter (in character)' : 'Rejection letter (in character)'));
+  card.appendChild(el('div', 'letter', (passed ? c.offer : c.reject).replace(/\{company\}/g, company)));
 
-  if (total >= company.bar) {
-    card.appendChild(el('h2', { className: 'pass' }, '✅ You\'re in!'));
-    card.appendChild(el('p', {}, company.pass));
-  } else {
-    let line;
-    if (total <= 2) line = pick(BRUTAL_LOW);
-    else if (total >= company.bar - 1) line = pick(BRUTAL_CLOSE);
-    else line = pick(BRUTAL_MID);
-    card.appendChild(el('h2', { className: 'fail' }, '❌ Rejected'));
-    card.appendChild(el('p', {}, line));
-    card.appendChild(el('p', { className: 'small' }, company.fail));
+  if (state.prep.tips.length) {
+    card.appendChild(el('div', 'label', 'Take these into the real interview'));
+    const ul = el('ul');
+    state.prep.tips.forEach(t => ul.appendChild(el('li', '', t)));
+    card.appendChild(ul);
   }
 
-  const row = el('div', { className: 'row' });
-  const again = el('button', {}, 'Try again 🔁');
-  again.onclick = () => startInterview(company.id);
-  const other = el('button', { className: 'ghost' }, 'Pick another company');
-  other.onclick = () => showCompanies(company.cat);
-  const home_ = el('button', { className: 'ghost' }, 'Change sector');
-  home_.onclick = home;
-  row.append(again, other, home_);
+  const row = el('div', 'row');
+  const redo = el('button', 'ghost', 'Redo these questions 🔁');
+  redo.onclick = () => {
+    state.idx = 0;
+    state.scores = [];
+    renderQuestion();
+  };
+  const change = el('button', 'ghost', 'Change costume or job');
+  change.onclick = () => {
+    stage.innerHTML = '';
+    state = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  row.append(redo, change);
   card.appendChild(row);
-  app.appendChild(card);
+
+  stage.appendChild(card);
+  card.scrollIntoView({ behavior: 'smooth' });
 }
 
-home();
+renderCostumes();
 </script>
 </body>
 </html>
