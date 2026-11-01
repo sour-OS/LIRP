@@ -29,7 +29,7 @@ button:disabled{opacity:.6;cursor:default}
 .score{font-size:2.8rem;font-weight:800;color:var(--accent);margin:6px 0}
 .pass{color:var(--good);font-weight:600}
 .fail{color:var(--bad);font-weight:600}
-.hidden{display:none}
+.hidden{display:none !important}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .crumb{color:var(--muted);font-size:.9rem;margin-bottom:12px}
 </style>
@@ -203,7 +203,14 @@ const el = (tag, props = {}, text) => {
   return n;
 };
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+const shuffle = arr => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
 
 function home() {
   state = null;
