@@ -2,7 +2,9 @@
 
 **Rehearse an interview with a character who has opinions.**
 
-LIRP lets you practice job interviews on purpose, with an over-the-top interviewer you can't take seriously. Pick a costume, upload your resume, paste a job posting, and the character runs the room: stage directions, tough questions read aloud in a voice, a cast audition score, costume-fitting notes for your resume, and a final offer or rejection letter written in character.
+LIRP lets you practice job interviews on purpose, with an over-the-top interviewer you can't take seriously. Pick an interviewer style, upload your resume, paste a job posting, and the character runs the room: stage directions, tough questions read aloud in a voice, a cast audition score, costume-fitting notes for your resume, and a final offer or rejection letter written in character.
+
+LIRP helps you larp more effectively by showing how weak your larp is, as the more you larp, the less you larp.
 
 The point is to commit to a performance and get better at it. Everyone has been told to "be more confident," and this is a place to try it without faking anything to a real employer.
 
@@ -10,7 +12,6 @@ Built for **LarpHacks**, a DevFest event hosted on **November 1, 2026** at the U
 
 Tracks:
 - Main
-- Render
 - ElevenLabs
 
 ## Features
