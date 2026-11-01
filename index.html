@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosplay Coach: LARP Like You Mean It</title>
+<style>
+:root{--bg:#120f1f;--card:#1f1a33;--ink:#fffaf0;--muted:#b3acd1;--accent:#ffb703;--pink:#ff5d8f;--good:#3ddc97;--bad:#ff6b6b;--line:#3d3560}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(circle at top,#2a1f4d,var(--bg) 60%);color:var(--ink);min-height:100vh;padding:24px}
+.wrap{max-width:880px;margin:0 auto}
+h1{font-size:2.4rem;margin:0 0 4px;letter-spacing:-.5px}
+h2{font-size:1.3rem;margin:0 0 10px}
+.tag{color:var(--muted);margin:0 0 24px;font-size:1.05rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.persona{cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s}
+.persona:hover{transform:translateY(-3px);border-color:var(--line)}
+.persona.sel{border-color:var(--accent)}
+.emoji{font-size:2.4rem;line-height:1}
+.persona h3{margin:8px 0 4px;font-size:1.1rem}
+.muted{color:var(--muted);font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:#2c2648;border-radius:999px;padding:4px 10px;font-size:.85rem}
+.chip.bad{background:#3d2030}
+button{background:var(--accent);color:#1a1200;border:0;border-radius:10px;padding:10px 16px;font-weight:700;font-size:.95rem;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:.5;cursor:not-allowed}
+textarea{width:100%;min-height:130px;resize:vertical;background:#15112a;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;margin:12px 0}
+.bubble{background:#2c2648;padding:16px;border-radius:14px;line-height:1.5;font-size:1.1rem;border-left:4px solid var(--pink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.score{font-size:3rem;font-weight:800;margin:6px 0;color:var(--accent)}
+.hit{color:var(--good);margin:6px 0}
+.miss{color:var(--bad);margin:6px 0}
+.hidden{display:none}
+ul{margin:6px 0;padding-left:20px}
+li{margin:6px 0;line-height:1.45}
+.small{font-size:.85rem;color:var(--muted)}
+.label{font-size:.85rem;color:var(--muted);margin-top:14px;text-transform:uppercase;letter-spacing:1px}
+.sheet-head{display:flex;gap:14px;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎭 Cosplay Coach</h1>
+  <p class="tag">LARP like you mean it. Nobody needs to know it's you.</p>
+
+  <section id="pickStep">
+    <h2>1. Choose your costume</h2>
+    <div id="personas" class="grid"></div>
+  </section>
+
+  <section id="sheet" class="card hidden">
+    <div class="sheet-head">
+      <div class="emoji" id="sheetEmoji"></div>
+      <div>
+        <h2 id="sheetTitle" style="margin:0"></h2>
+        <p class="muted" id="sheetRole" style="margin:4px 0 0"></p>
+      </div>
+    </div>
+    <div class="label">Personality quirks to embody</div>
+    <div class="chips" id="sheetTraits"></div>
+    <div class="label">Power words they actually say</div>
+    <div class="chips" id="sheetVocab"></div>
+    <div class="label">Cringe words that will blow your cover</div>
+    <div class="chips" id="sheetAvoid"></div>
+  </section>
+
+  <section id="practice" class="card hidden">
+    <h2>2. Stay in character</h2>
+    <p class="small" id="progress"></p>
+    <div class="bubble" id="prompt"></div>
+    <textarea id="reply" placeholder="Answer as your character would. Ctrl/Cmd+Enter to submit."></textarea>
+    <div class="row">
+      <button id="submitBtn">Submit answer</button>
+      <button class="ghost" id="micBtn">🎤 Speak it</button>
+      <button class="ghost" id="replayBtn">🔊 Replay question</button>
+    </div>
+  </section>
+
+  <section id="feedback" class="card hidden"></section>
+  <section id="final" class="card hidden"></section>
+</div>
+
+<script>
+const PERSONAS = [
+  {
+    id: 'guru', emoji: '🧘', title: 'The Hustle Guru', role: 'Keynote speaker at a conference nobody can locate on a map',
+    pitch: 1.3, rate: 1.1,
+    traits: ['Says "synergy" unironically', 'Speaks only in 10x', 'Believes sleep is for quitters'],
+    vocab: ['synergy', 'pivot', 'scale', 'leverage', 'bandwidth', 'north star', 'alignment', 'traction'],
+    avoid: ['um', 'uh', 'like', 'honestly', 'I think', 'sorry', 'maybe', 'lol'],
+    intro: 'Hey! Love the energy. Let us go deep, and let us go fast.',
+    scenarios: [
+      { prompt: 'What is your north star, and how are you going to scale it?', keys: ['goal', 'north star', 'scale', 'growth', 'vision'] },
+      { prompt: 'Tell me about a time you pivoted. What did the data teach you?', keys: ['pivot', 'learned', 'data', 'customers', 'lesson'] },
+      { prompt: 'Why should I back you instead of the guy in the hoodie across the room?', keys: ['because', 'unique', 'team', 'traction', 'edge'] }
+    ]
+  },
+  {
+    id: 'knight', emoji: '🏰', title: 'The Medieval Job Interviewer', role: 'Lord of Human Resources, Castle Inc.',
+    pitch: 0.75, rate: 0.9,
+    traits: ['Speaks with ancient grandeur', 'Demands tales of valor', 'Distrusts all modern software'],
+    vocab: ['verily', 'quest', 'honor', 'craft', 'forge', 'realm', 'steadfast', 'noble'],
+    avoid: ['um', 'uh', 'lol', 'bruh', 'literally', 'whatever', 'totally', 'like'],
+    intro: 'Hark! A new applicant approaches. Speak, and speak truly.',
+    scenarios: [
+      { prompt: 'Good traveler, what quest has shaped your craft?', keys: ['quest', 'craft', 'journey', 'built', 'learned'] },
+      { prompt: 'Recount a battle you lost. How did you rise again?', keys: ['lost', 'learned', 'rose', 'again', 'fixed'] },
+      { prompt: 'Why should this realm trust you with its treasury?', keys: ['honor', 'trust', 'steadfast', 'accountable', 'loyal'] }
+    ]
+  },
+  {
+    id: 'sommelier', emoji: '🍷', title: 'The Insufferable Sommelier', role: 'Head of wine at a restaurant with no visible prices',
+    pitch: 1.0, rate: 0.85,
+    traits: ['Sniffs before every answer', 'Finds notes of something everywhere', 'Disappointed by default'],
+    vocab: ['notes', 'body', 'finish', 'tannin', 'bouquet', 'terroir', 'structure', 'balance'],
+    avoid: ['tasty', 'yummy', 'good', 'um', 'uh', 'I guess', 'whatever', 'lol'],
+    intro: 'Mm. Let me smell that before you speak.',
+    scenarios: [
+      { prompt: 'Describe the first thing you notice when you taste a wine.', keys: ['notes', 'body', 'acid', 'bouquet', 'finish'] },
+      { prompt: 'Walk me through a bottle you would never serve to a guest.', keys: ['structure', 'balance', 'tannin', 'flawed', 'because'] },
+      { prompt: 'Why should I trust your palate over the critics?', keys: ['palate', 'experience', 'terroir', 'taste', 'trained'] }
+    ]
+  },
+  {
+    id: 'detective', emoji: '🕵️', title: 'The Dramatic Detective', role: 'Detective who is 100% sure everyone did it',
+    pitch: 0.9, rate: 0.95,
+    traits: ['Narrates like a noir film', 'Suspicious of everything', 'Pauses for dramatic effect'],
+    vocab: ['alibi', 'motive', 'evidence', 'suspect', 'timeline', 'clue', 'witness', 'case'],
+    avoid: ['um', 'uh', 'idk', 'no clue', 'lol', 'I dunno', 'whatever', 'like'],
+    intro: 'Sit down. Do not touch the evidence. Now, talk.',
+    scenarios: [
+      { prompt: 'Where were you on the night of the incident?', keys: ['alibi', 'timeline', 'was', 'at', 'until'] },
+      { prompt: 'What evidence do you have that clears your name?', keys: ['evidence', 'clue', 'witness', 'proof', 'record'] },
+      { prompt: 'Who do you think the real suspect is, and why?', keys: ['suspect', 'motive', 'because', 'case', 'clue'] }
+    ]
+  }
+];
+
+const ROASTS_LOW = [
+  'Your character just adjusted their monocle and left the room.',
+  'The witness has stopped taking notes. This is not good.',
+  'Somewhere, a real professional felt a disturbance in the Force.'
+];
+const ROASTS_OK = [
+  'Believable. Your character is at least nodding along.',
+  'You are in the costume now. Just stop checking your phone.',
+  'Not bad. A few more borrowed words and you will be a natural.'
+];
+
+let current = null;
+let scenarioIdx = 0;
+let results = [];
+
+const $ = id => document.getElementById(id);
+
+function el(tag, props = {}, text) {
+  const node = document.createElement(tag);
+  Object.assign(node, props);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function escapeRe(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function containsWord(text, phrase) {
+  return new RegExp('\\b' + escapeRe(phrase) + '\\b', 'i').test(text);
+}
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function renderPersonas() {
+  const wrap = $('personas');
+  wrap.innerHTML = '';
+  PERSONAS.forEach(p => {
+    const card = el('div', { className: 'card persona' });
+    card.appendChild(el('div', { className: 'emoji' }, p.emoji));
+    card.appendChild(el('h3', {}, p.title));
+    card.appendChild(el('div', { className: 'muted' }, p.role));
+    const chips = el('div', { className: 'chips' });
+    p.traits.forEach(t => chips.appendChild(el('span', { className: 'chip' }, t)));
+    card.appendChild(chips);
+    card.onclick = () => selectPersona(p.id);
+    wrap.appendChild(card);
+  });
+}
+
+function fillChips(id, items, cls = 'chip') {
+  const box = $(id);
+  box.innerHTML = '';
+  items.forEach(i => box.appendChild(el('span', { className: cls }, i)));
+}
+
+function selectPersona(id) {
+  current = PERSONAS.find(p => p.id === id);
+  scenarioIdx = 0;
+  results = [];
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+
+  document.querySelectorAll('.persona').forEach((c, i) => {
+    c.classList.toggle('sel', PERSONAS[i].id === id);
+  });
+
+  $('sheetEmoji').textContent = current.emoji;
+  $('sheetTitle').textContent = current.title;
+  $('sheetRole').textContent = current.role;
+  fillChips('sheetTraits', current.traits);
+  fillChips('sheetVocab', current.vocab);
+  fillChips('sheetAvoid', current.avoid, 'chip bad');
+
+  $('sheet').classList.remove('hidden');
+  $('practice').classList.remove('hidden');
+  $('feedback').classList.add('hidden');
+  $('final').classList.add('hidden');
+
+  renderScenario(true);
+  $('sheet').scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderScenario(withIntro) {
+  const scen = current.scenarios[scenarioIdx];
+  $('progress').textContent = `Scene ${scenarioIdx + 1} of ${current.scenarios.length}`;
+  $('prompt').textContent = scen.prompt;
+  $('reply').value = '';
+  $('reply').placeholder = 'Answer as your character would. Ctrl/Cmd+Enter to submit.';
+  $('submitBtn').disabled = false;
+  $('reply').focus();
+  speak(withIntro ? current.intro + ' ' + scen.prompt : scen.prompt);
+}
+
+function analyze(text, persona, scen) {
+  const keyHits = scen.keys.filter(k => containsWord(text, k));
+  const vocabHits = persona.vocab.filter(v => containsWord(text, v));
+  const fillers = persona.avoid.filter(f => containsWord(text, f));
+  const words = text.split(/\s+/).filter(Boolean).length;
+
+  let score = 35;
+  score += Math.min(keyHits.length, 3) * 15;
+  score += Math.min(vocabHits.length, 3) * 8;
+  score -= fillers.length * 8;
+  if (words < 12) score -= 15;
+  score = Math.max(0, Math.min(100, score));
+
+  return { score, keyHits, vocabHits, fillers, words };
+}
+
+function submitAnswer() {
+  const text = $('reply').value.trim();
+  if (!text) {
+    $('reply').placeholder = 'Silence is not in character. Say something!';
+    $('reply').focus();
+    return;
+  }
+  const scen = current.scenarios[scenarioIdx];
+  const result = analyze(text, current, scen);
+  results.push(result);
+  $('submitBtn').disabled = true;
+  showFeedback(result);
+}
+
+function showFeedback(r) {
+  const box = $('feedback');
+  box.innerHTML = '';
+  box.classList.remove('hidden');
+
+  box.appendChild(el('h2', {}, 'Character Accuracy'));
+  box.appendChild(el('div', { className: 'score' }, r.score + ' / 100'));
+
+  const hits = el('div', { className: r.keyHits.length ? 'hit' : 'miss' },
+    'Things they actually care about: ' + (r.keyHits.length ? r.keyHits.join(', ') : 'none. Did you even read the question?'));
+  box.appendChild(hits);
+
+  const vocab = el('div', { className: r.vocabHits.length ? 'hit' : 'miss' },
+    'Costume words used: ' + (r.vocabHits.length ? r.vocabHits.join(', ') : 'none. Naked, character-wise.'));
+  box.appendChild(vocab);
+
+  if (r.fillers.length) {
+    box.appendChild(el('div', { className: 'miss' },
+      'Cringe detected: ' + r.fillers.join(', ') + '. Your cover is at risk.'));
+  }
+
+  const tips = [];
+  if (r.keyHits.length < 2) tips.push('Answer the actual question. The character is watching you like a suspicious hawk.');
+  if (r.vocabHits.length === 0) tips.push('Borrow two or three words from the costume sheet. Theft is encouraged in this line of work.');
+  if (r.words < 12) tips.push('Too short. Characters with this much screen time do not say "yep."');
+  if (!tips.length) tips.push('Flawless. Now try it without peeking at the costume sheet.');
+
+  box.appendChild(el('div', { className: 'label' }, 'Director notes'));
+  const ul = el('ul');
+  tips.forEach(t => ul.appendChild(el('li', {}, t)));
+  box.appendChild(ul);
+
+  box.appendChild(el('p', { className: 'small' }, pick(r.score < 60 ? ROASTS_LOW : ROASTS_OK)));
+
+  const row = el('div', { className: 'row' });
+  const isLast = scenarioIdx === current.scenarios.length - 1;
+  const next = el('button', {}, isLast ? 'See my final rank 🏆' : 'Next scene →');
+  next.onclick = () => {
+    if (isLast) {
+      showFinal();
+    } else {
+      scenarioIdx++;
+      box.classList.add('hidden');
+      renderScenario(false);
+    }
+  };
+  row.appendChild(next);
+  box.appendChild(row);
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showFinal() {
+  $('practice').classList.add('hidden');
+  $('feedback').classList.add('hidden');
+  const box = $('final');
+  box.innerHTML = '';
+  box.classList.remove('hidden');
+
+  const avg = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
+  let rank, verdict;
+  if (avg >= 85) {
+    rank = 'Oscar-Worthy Impostor';
+    verdict = 'Your alter ego just got a LinkedIn offer. Do not reveal yourself.';
+  } else if (avg >= 60) {
+    rank = 'Convincing Doppelgänger';
+    verdict = 'Ditch the cringe words and nobody will ever know it was you.';
+  } else {
+    rank = 'Mostly You in a Fake Mustache';
+    verdict = 'Still very recognizable. Run it again and steal more of their language.';
+  }
+
+  box.appendChild(el('div', { className: 'emoji' }, current.emoji));
+  box.appendChild(el('h2', {}, 'Final Rank: ' + rank));
+  box.appendChild(el('div', { className: 'score' }, avg + ' / 100'));
+  box.appendChild(el('p', {}, verdict));
+
+  const row = el('div', { className: 'row' });
+  const again = el('button', {}, 'Run it again 🔁');
+  again.onclick = () => selectPersona(current.id);
+  const switchBtn = el('button', { className: 'ghost' }, 'Try another costume');
+  switchBtn.onclick = () => {
+    $('sheet').classList.add('hidden');
+    $('final').classList.add('hidden');
+    document.querySelectorAll('.persona').forEach(c => c.classList.remove('sel'));
+    $('pickStep').scrollIntoView({ behavior: 'smooth' });
+  };
+  row.appendChild(again);
+  row.appendChild(switchBtn);
+  box.appendChild(row);
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.pitch = current ? current.pitch : 1;
+  u.rate = current ? current.rate : 1;
+  speechSynthesis.speak(u);
+}
+
+// Optional speech-to-text: only shown if the browser supports it
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SR) {
+  const rec = new SR();
+  rec.lang = 'en-US';
+  rec.interimResults = false;
+  rec.onresult = e => {
+    const said = e.results[0][0].transcript;
+    $('reply').value = ($('reply').value ? $('reply').value + ' ' : '') + said;
+  };
+  rec.onerror = () => { $('reply').placeholder = 'Mic hiccuped. Type it instead.'; };
+  $('micBtn').onclick = () => { try { rec.start(); } catch (e) { /* already listening */ } };
+} else {
+  $('micBtn').classList.add('hidden');
+}
+
+$('submitBtn').onclick = submitAnswer;
+$('replayBtn').onclick = () => speak($('prompt').textContent);
+$('reply').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitAnswer();
+});
+
+renderPersonas();
+</script>
+</body>
+</html>
