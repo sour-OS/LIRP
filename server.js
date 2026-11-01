@@ -106,19 +106,18 @@ function resumeParts(resume) {
 
 async function handlePrep(body) {
   const posting = String(body.posting || '').slice(0, MAX_POSTING);
-  const costume = String(body.costume || 'a neutral recruiter').slice(0, 1000);
+  const costume = String(body.costume || 'an over-the-top caricature of a recruiter').slice(0, 1000);
   const hasResume = !!body.resume;
 
-  const prompt = `You are running a roleplay interview practice session. Stay fully in character as this interviewer: ${costume}
+  const prompt = `You are running a comedy roleplay. Play an OVER-THE-TOP CARICATURE of the interviewer, not a realistic one. Exaggerate every trait and commit fully to the bit. Character: ${costume}
 
 Your tasks:
-1. Read the job posting${hasResume ? ' and the candidate resume that follows' : ''}.
-2. Write one opening line the interviewer says, in character (1 to 2 sentences).
-3. Give a fit score from 0 to 100 and a one-sentence in-character summary of how the candidate fits this role.
-4. Write exactly 3 hard, specific interview questions for this role, asked in character. Reference the posting or resume where possible.
-5. Give up to 4 resume glow-up suggestions. Each one reframes EXISTING experience with clearer, stronger language, or points out a metric the candidate could add IF they actually have it. Never invent jobs, degrees, certifications, skills, employers, or numbers. Set "verifyFirst" to true when the suggestion depends on the candidate confirming a fact.
-6. List up to 6 keywords from the posting that the candidate should use ONLY where they are genuinely true of their experience.
-7. Give 3 practical interview tips, written in the character's voice.
+1. Write an opener in character (1 to 2 sentences) that sets the rules of the room with stage directions, like "Phones face down. I have a cheese vendor at 3." Make it theatrical.
+2. Give a "cast audition score" from 0 to 100 and a one-sentence verdict, written as the character would say it.
+3. Write exactly 3 hard, specific interview questions, asked in character and delivered with exaggerated energy. Reference the posting${hasResume ? ' or the resume' : ''} where possible.
+4. Give up to 4 "costume fitting" notes. Each note takes EXISTING experience from the resume and suggests a more dramatic but still truthful way to present it. Never invent jobs, degrees, skills, employers, or numbers. Set "verifyFirst" to true when the note depends on the candidate confirming a fact.
+5. List up to 6 "character vocabulary" words from the posting that this character would overuse.
+6. Give 3 tips written in the character's voice. They should be funny and exaggerated but still useful.
 
 Return ONLY JSON in this shape:
 {"opener":"","fit":0,"summary":"","questions":["","",""],"glowUp":[{"section":"","suggestion":"","verifyFirst":true}],"keywords":[""],"tips":["","",""]}
@@ -154,14 +153,14 @@ ${posting}
 
 async function handleGrade(body) {
   const posting = String(body.posting || '').slice(0, MAX_POSTING);
-  const costume = String(body.costume || 'a neutral recruiter').slice(0, 1000);
+  const costume = String(body.costume || 'an over-the-top caricature of a recruiter').slice(0, 1000);
   const question = String(body.question || '').slice(0, 1000);
   const answer = String(body.answer || '').slice(0, 4000);
 
-  const prompt = `You are a funny, brutal interviewer grading one answer. Stay in character as: ${costume}
+  const prompt = `You are a comedy interviewer grading one answer as an OVER-THE-TOP CARICATURE. Character: ${costume}
 
 Score the answer from 0 to 6 (integer) for accuracy, specificity, relevance to the job, and confidence.
-Write a short, funny, brutally honest in-character reaction (1 to 2 sentences). Roast the answer, never the candidate's identity, appearance, or background.
+Write a short, funny, exaggerated reaction (1 to 2 sentences) in character. Roast the performance: the try-hard phrasing, the buzzwords, the fake confidence. Never roast the candidate's identity, appearance, or background.
 Give one concrete tip for improvement.
 Set verdict to "pass" if score is 4 or higher, otherwise "fail".
 Return ONLY JSON: {"score": 0, "verdict": "pass" or "fail", "reaction": "...", "feedback": "..."}
