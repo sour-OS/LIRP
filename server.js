@@ -4,6 +4,8 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.GEMINI_API_KEY;
+const ELEVEN_KEY = process.env.ELEVENLABS_API_KEY;
+const ELEVEN_VOICE = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
 const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const MAX_BODY = 8 * 1024 * 1024;
@@ -193,6 +195,38 @@ async function run(handler, req, res) {
   }
 }
 
+async function handleSpeak(req, res) {
+  try {
+    if (!ELEVEN_KEY) throw new Error('ELEVENLABS_API_KEY is not set on the server.');
+
+    const body = await readJson(req);
+    const text = String(body.text || '').slice(0, 800).trim();
+    if (!text) throw new Error('Nothing to speak.');
+
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': ELEVEN_KEY,
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({ text, model_id: 'eleven_turbo_v2_5' })
+    });
+
+    if (!r.ok) {
+      console.error('ElevenLabs error', r.status, await r.text());
+      throw new Error('The voice is unavailable right now.');
+    }
+
+    const audio = Buffer.from(await r.arrayBuffer());
+    res.writeHead(200, { 'Content-Type': 'audio/mpeg', 'Content-Length': audio.length });
+    res.end(audio);
+  } catch (e) {
+    console.error(e);
+    send(res, 500, { error: e.message });
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
@@ -202,6 +236,10 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && url.pathname === '/api/grade') {
     return run(handleGrade, req, res);
+  }
+
+    if (req.method === 'POST' && url.pathname === '/api/speak') {
+    return handleSpeak(req, res);
   }
 
   if (req.method === 'GET') {

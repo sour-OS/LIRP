@@ -234,6 +234,32 @@ async function post(url, body) {
   return data;
 }
 
+let currentAudio = null;
+
+async function speak(text) {
+  try {
+    const res = await fetch('/api/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (!res.ok) throw new Error('voice failed');
+    const url = URL.createObjectURL(await res.blob());
+    if (currentAudio) currentAudio.pause();
+    currentAudio = new Audio(url);
+    await currentAudio.play();
+  } catch (e) {
+    console.warn(e);
+  }
+}
+
+function voiceButton(text) {
+  const b = el('button', 'ghost', '🔊 Hear it');
+  b.type = 'button';
+  b.onclick = () => speak(text);
+  return b;
+}
+
 function buzzHits(text) {
   const t = text.toLowerCase();
   return BUZZWORDS.filter(w => new RegExp('\\b' + w + '\\b').test(t));
@@ -295,6 +321,7 @@ function renderPrep() {
 
   card.appendChild(el('div', 'muted', 'Interviewer: ' + state.costume.emoji + ' ' + state.costume.name));
   card.appendChild(el('div', 'bubble', p.opener));
+  card.appendChild(voiceButton(p.opener));
 
   card.appendChild(el('div', 'label', 'Fit score'));
   card.appendChild(el('div', 'score', p.fit + ' / 100'));
@@ -350,6 +377,7 @@ function renderQuestion() {
 
   card.appendChild(el('div', 'muted', `${state.costume.name} · Question ${state.idx + 1} of ${state.questions.length}`));
   card.appendChild(el('div', 'bubble', q));
+  card.appendChild(voiceButton(q));
 
   const answer = el('textarea');
   answer.placeholder = 'Answer in character. Be specific. Be brave. Be at least somewhat true.';
